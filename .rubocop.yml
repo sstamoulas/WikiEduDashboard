@@ -12,6 +12,7 @@ AllCops:
     - 'bin/**/*'
     - 'vendor/**/*'
     - 'app/views/**/**/*.haml'
+    - 'docs/**/*'
   TargetRubyVersion: 2.3
 
 Style/NumericPredicate:
@@ -21,7 +22,10 @@ Style/NumericPredicate:
 Metrics/LineLength:
   Max: 100
 
-# Disable complexity cops, since we use CodeClimate for that.
+ # RSpec style often makes it impractical to keep these complexity metrics low.
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
 # Metrics/MethodLength:
 #   Enabled: false
 # Metrics/AbcSize:

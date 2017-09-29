@@ -87,14 +87,13 @@ class CampaignsController < ApplicationController
   end
 
   def add_organizer
-    user = User.find_by(username: params[:username])
+    user = User.find_by(username: username_param)
 
     if user.nil?
-      flash[:error] = I18n.t('courses.error.user_exists', username: params[:username])
+      flash[:error] = I18n.t('courses.error.user_exists', username: username_param)
     else
       add_organizer_to_campaign(user)
-      flash[:notice] = t('campaign.organizer_added', user: params[:username],
-                                                     title: @campaign.title)
+      flash[:notice] = t('campaign.organizer_added', user: username_param, title: @campaign.title)
     end
 
     redirect_to overview_campaign_path(@campaign.slug)
@@ -114,8 +113,13 @@ class CampaignsController < ApplicationController
   end
 
   def remove_course
-    campaigns_course = CampaignsCourses.find_by(course_id: params[:course_id], campaign_id: @campaign.id)
-    message = campaigns_course&.destroy ? 'campaign.course_removed' : 'campaign.course_already_removed'
+    course_campaign = CampaignsCourses.find_by(course_id: params[:course_id],
+                                               campaign_id: @campaign.id)
+    message = if course_campaign&.destroy
+                'campaign.course_removed'
+              else
+                'campaign.course_already_removed'
+              end
     flash[:notice] = t(message, title: params[:course_title],
                                 campaign_title: @campaign.title)
     redirect_to programs_campaign_path(@campaign.slug)
@@ -201,6 +205,10 @@ class CampaignsController < ApplicationController
 
   def csv_params
     params.permit(:slug, :course)
+  end
+
+  def username_param
+    params[:username]
   end
 
   def campaign_params

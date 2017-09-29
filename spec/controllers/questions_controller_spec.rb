@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 describe QuestionsController do
-  describe '#get_question' do
+  describe '#show' do
     context 'when the question exists' do
       let!(:question) { create(:q_checkbox) }
       let(:question_id) { question.id }
-      before { get :get_question, params: { id: question_id }, format: :json }
+      before { get :show, params: { id: question_id }, format: :json }
       it 'renders the question in json' do
         expect(JSON.parse(response.body)['question']['id']).to eq(question.id)
       end

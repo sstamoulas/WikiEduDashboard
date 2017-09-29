@@ -57,16 +57,27 @@ class UsersController < ApplicationController
   ####################################################
   def index
     @users = if params[:email].present?
-               User.search_by_email(params[:email])
+               users_by_email
              elsif params[:real_name].present?
-               User.search_by_real_name(params[:real_name])
+               users_by_real_name
              else
-               User.instructor.limit(20)
-                   .order(created_at: :desc)
+               recently_registered_instructors
              end
   end
 
   private
+
+  def users_by_email
+    User.search_by_email params[:email]
+  end
+
+  def users_by_real_name
+    User.search_by_real_name params[:real_name]
+  end
+
+  def recently_registered_instructors
+    User.instructor.limit(20).order(created_at: :desc)
+  end
 
   #################
   # Adding a user #
@@ -164,7 +175,8 @@ class UsersController < ApplicationController
   def remove_assignment_templates
     assignments = @course_user.assignments
     assignments.each do |assignment|
-      RemoveAssignmentWorker.schedule_edits(course: @course, editing_user: current_user, assignment: assignment)
+      RemoveAssignmentWorker.schedule_edits(course: @course, editing_user: current_user,
+                                            assignment: assignment)
     end
   end
 

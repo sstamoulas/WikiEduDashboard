@@ -8,7 +8,7 @@ class FeedbackFormResponsesController < ApplicationController
     @has_explicit_subject = true if @subject
     @subject ||= request.referer || params['referer'] || ''
     @main_subject ||= @subject[/(.*) —/, 1] || @subject
-    @is_training_module = true if @subject =~ %r{/training/}
+    @is_training_module = subject_is_training_module?
     @feedback_form_response = FeedbackFormResponse.new
   end
 
@@ -34,6 +34,10 @@ class FeedbackFormResponsesController < ApplicationController
   def confirmation; end
 
   private
+
+  def subject_is_training_module?
+    return true if @subject =~ %r{/training/}
+  end
 
   def form_params
     params.require(:feedback_form_response).permit(:body, :subject)
